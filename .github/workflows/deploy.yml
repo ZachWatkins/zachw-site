@@ -19,6 +19,7 @@ jobs:
 
       - name: Install PHP dependencies
         run: |
+          cp .env.example .env
           composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
           php artisan key:generate
 
