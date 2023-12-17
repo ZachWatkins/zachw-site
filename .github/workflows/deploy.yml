@@ -44,11 +44,11 @@ jobs:
 
       - name: Upload artifact to server
         run: |
-          touch deployment_key
-          chmod 600 deployment_key
-          echo "${{ secrets.DEPLOYKEY }}" >> deployment_key
-          scp -i deployment_key app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/app.zip
-          rm deployment_key
+          touch key
+          chmod 600 key
+          echo "${{ secrets.DEPLOYKEY }}" >> key
+          scp -i key app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/app.zip
+          rm key
         shell: bash
 
       - name: Unzip artifact and update server
