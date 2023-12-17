@@ -1,0 +1,62 @@
+name: Pull Request Opened
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+
+      - name: Install PHP dependencies
+        run: |
+          composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
+          php artisan key:generate
+
+      - name: Install NodeJS dependencies
+        run: npm install
+
+      - name: Run tests
+        run: php artisan test
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Bundle
+        run: ./bundle.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: app.zip
+
+      - name: Upload artifact to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.DEPLOYKEY }}
+          source: app.zip
+          target: /opt/bitnami/nginx/html/app.zip
+
+      - name: Unzip artifact and update server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.DEPLOYKEY }}
+          script: |
+            cd /opt/bitnami/nginx/html
+            unzip -o app.zip
+            rm app.zip
+            ./update.sh
