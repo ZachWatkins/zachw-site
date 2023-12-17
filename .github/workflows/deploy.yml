@@ -43,7 +43,13 @@ jobs:
           path: app.zip
 
       - name: Upload artifact to server
-        run: scp -i ${{ secrets.DEPLOYKEY }} app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/app.zip
+        run: |
+          touch deploy_key
+          chmod 600 deploy_key
+          echo "${{ secrets.DEPLOYKEY }}" >> deploy_key
+          scp -i deploy_key app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/app.zip
+          rm deploy_key
+        shell: bash
 
       - name: Unzip artifact and update server
         uses: appleboy/ssh-action@v1.0.0
