@@ -50,6 +50,8 @@ jobs:
           key: ${{ secrets.DEPLOYKEY }}
           source: app.zip
           target: /opt/bitnami/nginx/html/app.zip
+          debug: true
+          rm: true
 
       - name: Unzip artifact and update server
         uses: appleboy/ssh-action@v1.0.0
