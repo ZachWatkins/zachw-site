@@ -37,12 +37,6 @@ jobs:
         run: chmod +x bundle.sh && ./bundle.sh
         shell: bash
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: app.zip
-
       - name: Upload artifact to server
         run: |
           touch key
@@ -64,3 +58,9 @@ jobs:
             unzip -o app.zip
             rm app.zip
             ./update.sh
+
+      - name: Upload artifact to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: app.zip
