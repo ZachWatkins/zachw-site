@@ -34,7 +34,7 @@ jobs:
         run: npm run build
 
       - name: Bundle
-        run: ./bundle.sh
+        run: chmod +x bundle.sh && ./bundle.sh
         shell: bash
 
       - name: Upload artifact
