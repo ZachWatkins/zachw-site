@@ -42,6 +42,7 @@ jobs:
           touch key
           chmod 600 key
           echo "${{ secrets.DEPLOYKEY }}" >> key
+          mkdir -p $HOME/.ssh
           ssh-keyscan -H ${{ secrets.HOST }} >> $HOME/.ssh/known_hosts
           scp -i key -o UserKnownHostsFile=$HOME/.ssh/known_hosts app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/app.zip
           rm key
