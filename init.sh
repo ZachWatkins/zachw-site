@@ -81,7 +81,6 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 php artisan key:generate
-php artisan migrate --force
 sudo /opt/bitnami/ctlscript.sh restart nginx
 EOM
 
