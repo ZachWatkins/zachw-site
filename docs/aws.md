@@ -35,3 +35,13 @@ nano ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 exit
 ```
+
+** Modify the Lightsail NGINX configuration for your application**
+
+```shell
+cd /opt/bitnami/nginx/conf/server_blocks/
+cp sample-https-server-block.conf.disabled lightsail-laravel-http-server-block.conf
+cp sample-server-block.conf.disabled lightsail-laravel-http-server-block.conf
+```
+
+Replace `server_name _;` with `server_name $DOMAIN;` in both files.
