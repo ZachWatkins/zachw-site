@@ -25,9 +25,9 @@ fi
 # Locate the default SSH key. Location priority:
 # 1. ./LightsailDefaultPrivateKey-*.pem
 # 2. ~/.ssh/LightsailDefaultPrivateKey-*.pem
-SSH_KEY=$(find . -maxdepth 1 -name "LightsailDefaultPrivateKey-*.pem" -print -quit)
+SSH_KEY=$(find . -maxdepth 1 -name "LightsailDefaultKey-*.pem" -print -quit)
 if [ -z "$SSH_KEY" ]; then
-    SSH_KEY=$(find ~/.ssh -maxdepth 1 -name "LightsailDefaultPrivateKey-*.pem" -print -quit)
+    SSH_KEY=$(find ~/.ssh -maxdepth 1 -name "LightsailDefaultKey-*.pem" -print -quit)
     if [ -z "$SSH_KEY" ]; then
         echo "Could not find the default SSH key."
         exit 1
@@ -36,21 +36,21 @@ fi
 
 # Generate a new SSH key for the same user for use as a deployment key.
 # This is necessary because the deployment actions need the same access as SSH_USER.
-DEPLOY_KEY_PATH="~/.ssh/$SSH_USER_$DOMAIN_NAME"
-ssh-keygen -t rsa -b 4096 -C "$SSH_USER@$DOMAIN_NAME" -f "$DEPLOY_KEY_PATH" -N ""
+mkdir -p ~/.ssh
+cd ~/.ssh
+DEPLOY_KEY_PATH="~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}"
+ssh-keygen -t rsa -b 4096 -C "$SSH_USER@$DOMAIN_NAME" -f "${SSH_USER}-${DOMAIN_DIRECTORY}"
 
 # Upload files to the server needed to initialize the instance.
 ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && mkdir -p /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY"
-scp -i "$SSH_KEY" "$DEPLOY_KEY_PATH.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/$SSH_USER_$DOMAIN_NAME.pub"
+scp -i "$SSH_KEY" "~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
 scp -i "$SSH_KEY" app.zip "$SSH_USER@$DOMAIN_NAME:/opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/app.zip"
 
 read -r -d '' SSH_COMMAND << EOM
 set -e
-sudo apt-get update
-sudo apt-get install -y unzip
 DEPLOY_KEY_EXISTS=\$(cat ~/.ssh/authorized_keys | grep '$SSH_USER@$DOMAIN_NAME')
 if [ -z "\$DEPLOY_KEY_EXISTS" ]; then
-    cat ~/.ssh/$SSH_USER_$DOMAIN_NAME.pub >> ~/.ssh/authorized_keys
+    cat ~/.ssh/${SSH_USER}_${DOMAIN_NAME}.pub >> ~/.ssh/authorized_keys
 fi
 cd /opt/bitnami/nginx/conf/server_blocks/
 if [ -f $DOMAIN_DIRECTORY-http-server-block.conf ]; then
@@ -80,11 +80,6 @@ php artisan migrate --force
 sudo /opt/bitnami/ctlscript.sh restart nginx
 EOM
 
-echo "To enforce https-only mode for NGINX on Amazon Lightsail, add the following line to the top of /opt/bitnami/nginx/conf/server_blocks/$DOMAIN_DIRECTORY-https-server-block.conf:"
-echo "return 301 https://\$host\$request_uri;"
-echo "Then, run the following command to restart NGINX:"
-echo "sudo /opt/bitnami/ctlscript.sh restart nginx"
-
 ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "$SSH_COMMAND"
 
 read -r -d '' NEXT_STEPS << EOM
@@ -93,3 +88,5 @@ Next steps:
 2. Add the private SSH key to the GitHub repository as a deployment key. Location: $DEPLOY_KEY_PATH
 3. Update the .env file with the correct database credentials, APP_URL, and other values.
 EOM
+
+echo "$NEXT_STEPS"
