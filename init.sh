@@ -36,11 +36,15 @@ if [ -z "$SSH_KEY" ]; then
     fi
 fi
 
+echo "Initializing $DOMAIN_NAME for Laravel."
+
 # Generate a new SSH key for the same user for use as a deployment key.
 # This is necessary because the deployment actions need the same access as SSH_USER.
 mkdir -p ~/.ssh
 DEPLOY_KEY_PATH="~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}"
-if [ ! -f "$DEPLOY_KEY_PATH" ]; then
+FIND_DEPLOY_KEY=$(find ~/.ssh -maxdepth 1 -name "${SSH_USER}-${DOMAIN_DIRECTORY}" -print -quit)
+# If the deploy key already exists, don't generate a new one.
+if [ -z "$FIND_DEPLOY_KEY" ]; then
     cd ~/.ssh
     ssh-keygen -t rsa -b 4096 -C "$SSH_USER@$DOMAIN_NAME" -f "${SSH_USER}-${DOMAIN_DIRECTORY}"
     cd "$CURRENT_DIRECTORY"
@@ -48,8 +52,14 @@ fi
 
 # Upload files to the server needed to initialize the instance.
 ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "mkdir -p /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY"
-scp -i "$SSH_KEY" app.zip "$SSH_USER@$DOMAIN_NAME:/opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/app.zip"
-scp -i "$SSH_KEY" "~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
+APP_FOUND=$(ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "find /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY -maxdepth 1 -name 'app.zip' -print -quit")
+if [ -z "$APP_FOUND" ]; then
+    scp -i "$SSH_KEY" app.zip "$SSH_USER@$DOMAIN_NAME:/opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/app.zip"
+fi
+SSH_KEY_FOUND=$(ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "find ~/.ssh -maxdepth 1 -name '${SSH_USER}-${DOMAIN_DIRECTORY}.pub' -print -quit")
+if [ -z "$SSH_KEY_FOUND" ]; then
+    scp -i "$SSH_KEY" "~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
+fi
 
 read -r -d '' SSH_COMMAND << EOM
 set -e
@@ -74,12 +84,12 @@ sed -i "s/server_name _;/server_name $DOMAIN_NAME www.$DOMAIN_NAME;/g" $DOMAIN_D
 cd /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/
 unzip app.zip
 rm app.zip
-chmod +x artisan
-chmod +x update.sh
+sudo chmod +x update.sh
 sudo chmod -R 777 storage/frameworks/
 if [ ! -f .env ]; then
     cp .env.example .env
 fi
+chmod +x artisan
 php artisan key:generate
 sudo /opt/bitnami/ctlscript.sh restart nginx
 EOM
