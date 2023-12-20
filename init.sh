@@ -65,7 +65,9 @@ DEPLOY_KEY_FOUND=\$(cat ~/.ssh/authorized_keys | grep '$SSH_USER@$DOMAIN_NAME')
 if [ -z "\$DEPLOY_KEY_FOUND" ]; then
     cat ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub >> ~/.ssh/authorized_keys
 fi
-rm ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub
+if [ -f ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub ]; then
+    rm ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub
+fi
 cd /opt/bitnami/nginx/conf/server_blocks/
 if [ -f $DOMAIN_DIRECTORY-http-server-block.conf ]; then
     rm $DOMAIN_DIRECTORY-http-server-block.conf
