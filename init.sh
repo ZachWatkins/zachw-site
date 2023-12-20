@@ -22,6 +22,8 @@ if [ -z "$SSH_USER" ]; then
     SSH_USER="bitnami"
 fi
 
+CURRENT_DIRECTORY=$(pwd)
+
 # Locate the default SSH key. Location priority:
 # 1. ./LightsailDefaultPrivateKey-*.pem
 # 2. ~/.ssh/LightsailDefaultPrivateKey-*.pem
@@ -37,21 +39,25 @@ fi
 # Generate a new SSH key for the same user for use as a deployment key.
 # This is necessary because the deployment actions need the same access as SSH_USER.
 mkdir -p ~/.ssh
-cd ~/.ssh
 DEPLOY_KEY_PATH="~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}"
-ssh-keygen -t rsa -b 4096 -C "$SSH_USER@$DOMAIN_NAME" -f "${SSH_USER}-${DOMAIN_DIRECTORY}"
+if [ ! -f "$DEPLOY_KEY_PATH" ]; then
+    cd ~/.ssh
+    ssh-keygen -t rsa -b 4096 -C "$SSH_USER@$DOMAIN_NAME" -f "${SSH_USER}-${DOMAIN_DIRECTORY}"
+    cd "$CURRENT_DIRECTORY"
+fi
 
 # Upload files to the server needed to initialize the instance.
-ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && mkdir -p /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY"
-scp -i "$SSH_KEY" "~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
+ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "mkdir -p /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY"
 scp -i "$SSH_KEY" app.zip "$SSH_USER@$DOMAIN_NAME:/opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/app.zip"
+scp -i "$SSH_KEY" "~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
 
 read -r -d '' SSH_COMMAND << EOM
 set -e
-DEPLOY_KEY_EXISTS=\$(cat ~/.ssh/authorized_keys | grep '$SSH_USER@$DOMAIN_NAME')
-if [ -z "\$DEPLOY_KEY_EXISTS" ]; then
-    cat ~/.ssh/${SSH_USER}_${DOMAIN_NAME}.pub >> ~/.ssh/authorized_keys
+DEPLOY_KEY_FOUND=\$(cat ~/.ssh/authorized_keys | grep '$SSH_USER@$DOMAIN_NAME')
+if [ -z "\$DEPLOY_KEY_FOUND" ]; then
+    cat ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub >> ~/.ssh/authorized_keys
 fi
+rm ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub
 cd /opt/bitnami/nginx/conf/server_blocks/
 if [ -f $DOMAIN_DIRECTORY-http-server-block.conf ]; then
     rm $DOMAIN_DIRECTORY-http-server-block.conf
@@ -60,7 +66,6 @@ cp sample-server-block.conf.disabled $DOMAIN_DIRECTORY-http-server-block.conf
 SEARCH="server_name _;"
 REPLACE="server_name $DOMAIN_NAME www.$DOMAIN_NAME;\n\treturn 301 https://\$host\$request_uri;"
 sed -i "s/\$SEARCH/\$REPLACE/g" $DOMAIN_DIRECTORY-http-server-block.conf
-
 if [ -f $DOMAIN_DIRECTORY-https-server-block.conf ]; then
     rm $DOMAIN_DIRECTORY-https-server-block.conf
 fi
