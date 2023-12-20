@@ -7,12 +7,6 @@ Example:
     bash init.sh example.com bitnami
 EOM
 
-read -r -d '' NEXT_STEPS << EOM
-Next steps:
-1. Add the private SSH key to the GitHub repository as a deployment key.
-2. Update the .env file with the correct database credentials, APP_URL, and other values.
-EOM
-
 DOMAIN_NAME=$1
 if [ -z "$DOMAIN_NAME" ]; then
     echo "$HELP"
@@ -59,23 +53,43 @@ if [ -z "\$DEPLOY_KEY_EXISTS" ]; then
     cat ~/.ssh/$SSH_USER_$DOMAIN_NAME.pub >> ~/.ssh/authorized_keys
 fi
 cd /opt/bitnami/nginx/conf/server_blocks/
+if [ -f $DOMAIN_DIRECTORY-http-server-block.conf ]; then
+    rm $DOMAIN_DIRECTORY-http-server-block.conf
+fi
 cp sample-server-block.conf.disabled $DOMAIN_DIRECTORY-http-server-block.conf
-sed -i "s/server_name _;/server_name $DOMAIN_NAME;/g" $DOMAIN_DIRECTORY-http-server-block.conf
+SEARCH="server_name _;"
+REPLACE="server_name $DOMAIN_NAME www.$DOMAIN_NAME;\n\treturn 301 https://\$host\$request_uri;"
+sed -i "s/\$SEARCH/\$REPLACE/g" $DOMAIN_DIRECTORY-http-server-block.conf
+
+if [ -f $DOMAIN_DIRECTORY-https-server-block.conf ]; then
+    rm $DOMAIN_DIRECTORY-https-server-block.conf
+fi
 cp sample-https-server-block.conf.disabled $DOMAIN_DIRECTORY-https-server-block.conf
-sed -i "s/server_name _;/server_name $DOMAIN_NAME;/g" $DOMAIN_DIRECTORY-https-server-block.conf
+sed -i "s/server_name _;/server_name $DOMAIN_NAME www.$DOMAIN_NAME;/g" $DOMAIN_DIRECTORY-https-server-block.conf
 cd /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/
 unzip app.zip
 rm app.zip
 chmod +x artisan
 chmod +x update.sh
+sudo chmod -R 777 storage/frameworks/
 if [ ! -f .env ]; then
     cp .env.example .env
 fi
 php artisan key:generate
-php artisan optimize
 php artisan migrate --force
 sudo /opt/bitnami/ctlscript.sh restart nginx
-set -e
 EOM
 
+echo "To enforce https-only mode for NGINX on Amazon Lightsail, add the following line to the top of /opt/bitnami/nginx/conf/server_blocks/$DOMAIN_DIRECTORY-https-server-block.conf:"
+echo "return 301 https://\$host\$request_uri;"
+echo "Then, run the following command to restart NGINX:"
+echo "sudo /opt/bitnami/ctlscript.sh restart nginx"
+
 ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "$SSH_COMMAND"
+
+read -r -d '' NEXT_STEPS << EOM
+Next steps:
+1. Log in via SSH and run this command to generate your SSL certificate: sudo /opt/bitnami/bncert-tool
+2. Add the private SSH key to the GitHub repository as a deployment key. Location: $DEPLOY_KEY_PATH
+3. Update the .env file with the correct database credentials, APP_URL, and other values.
+EOM
