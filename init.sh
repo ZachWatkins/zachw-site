@@ -36,8 +36,6 @@ if [ -z "$SSH_KEY" ]; then
     fi
 fi
 
-echo "Initializing $DOMAIN_NAME for Laravel."
-
 # Generate a new SSH key for the same user for use as a deployment key.
 # This is necessary because the deployment actions need the same access as SSH_USER.
 mkdir -p ~/.ssh
