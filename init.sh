@@ -49,43 +49,41 @@ if [ -z "$FIND_DEPLOY_KEY" ]; then
 fi
 
 # Upload files to the server needed to initialize the instance.
-ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "mkdir -p /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY"
-APP_FOUND=$(ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "find /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY -maxdepth 1 -name 'app.zip' -print -quit")
+ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "mkdir -p /home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY"
+APP_FOUND=$(ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "find /home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY -maxdepth 1 -name 'app.zip' -print -quit")
 if [ -z "$APP_FOUND" ]; then
-    scp -i "$SSH_KEY" app.zip "$SSH_USER@$DOMAIN_NAME:/opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/app.zip"
+    scp -i "$SSH_KEY" app.zip "$SSH_USER@$DOMAIN_NAME:/home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY/app.zip"
 fi
 SSH_KEY_FOUND=$(ssh -i "$SSH_KEY" "$SSH_USER@$DOMAIN_NAME" "find ~/.ssh -maxdepth 1 -name '${SSH_USER}-${DOMAIN_DIRECTORY}.pub' -print -quit")
 if [ -z "$SSH_KEY_FOUND" ]; then
-    scp -i "$SSH_KEY" "~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:~/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
+    scp -i "$SSH_KEY" "$HOME/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub" "$SSH_USER@$DOMAIN_NAME:/home/bitnami/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub"
 fi
 
 read -r -d '' SSH_COMMAND << EOM
-set -e
-DEPLOY_KEY_FOUND=\$(cat ~/.ssh/authorized_keys | grep '$SSH_USER@$DOMAIN_NAME')
-if [ -z "\$DEPLOY_KEY_FOUND" ]; then
-    cat ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub >> ~/.ssh/authorized_keys
+DEPLOY_KEY_INCLUDED=\$(cat ~/.ssh/authorized_keys | grep '$SSH_USER@$DOMAIN_NAME')
+if [ -z "\$DEPLOY_KEY_INCLUDED" ]; then
+    echo "Key not found. Adding to authorized_keys."
+    cat /home/bitnami/.ssh/${SSH_USER}-${DOMAIN_DIRECTORY}.pub >> /home/bitnami/.ssh/authorized_keys
 fi
-if [ -f ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub ]; then
-    rm ~/.ssh/${SSH_USER}-${DOMAIN_NAME}.pub
+cd /home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY/
+if [ ! -e artisan ]; then
+    unzip app.zip
 fi
-cd /opt/bitnami/nginx/conf/server_blocks/
-if [ -f $DOMAIN_DIRECTORY-http-server-block.conf ]; then
+cd /home/bitnami/stack/nginx/conf/server_blocks/
+if [ -e $DOMAIN_DIRECTORY-http-server-block.conf ]; then
     rm $DOMAIN_DIRECTORY-http-server-block.conf
 fi
-cp sample-server-block.conf.disabled $DOMAIN_DIRECTORY-http-server-block.conf
-SEARCH="server_name _;"
-REPLACE="server_name $DOMAIN_NAME www.$DOMAIN_NAME;\n\treturn 301 https://\$host\$request_uri;"
-sed -i "s/\$SEARCH/\$REPLACE/g" $DOMAIN_DIRECTORY-http-server-block.conf
+cp /home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY/nginx/default.conf $DOMAIN_DIRECTORY-http-server-block.conf
+sed -i "s/example.com/$DOMAIN_NAME/g" $DOMAIN_DIRECTORY-http-server-block.conf
 if [ -f $DOMAIN_DIRECTORY-https-server-block.conf ]; then
     rm $DOMAIN_DIRECTORY-https-server-block.conf
 fi
-cp sample-https-server-block.conf.disabled $DOMAIN_DIRECTORY-https-server-block.conf
-sed -i "s/server_name _;/server_name $DOMAIN_NAME www.$DOMAIN_NAME;/g" $DOMAIN_DIRECTORY-https-server-block.conf
-cd /opt/bitnami/nginx/html/$DOMAIN_DIRECTORY/
-unzip app.zip
-rm app.zip
+cp /home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY/nginx/https.conf $DOMAIN_DIRECTORY-https-server-block.conf
+sed -i "s/example.com/$DOMAIN_NAME/g" $DOMAIN_DIRECTORY-https-server-block.conf
+cd /home/bitnami/stack/nginx/html/$DOMAIN_DIRECTORY/
+sudo chown -R bitnami:daemon .
 sudo chmod +x update.sh
-sudo chmod -R 777 storage/frameworks/
+sudo chmod -R 777 storage/framework/
 if [ ! -f .env ]; then
     cp .env.example .env
 fi
