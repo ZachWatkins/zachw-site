@@ -1,32 +1,42 @@
 #!/bin/bash
 # This script is used to bundle the application into a .zip file.
 # It is used by the build pipeline to create the artifact.
-# It is also used by the deploy pipeline to deploy the artifact.
-# The script assumes that the application has already been built and tested.
+# The script assumes that the application has already been tested.
 DIR=$(pwd)
 STARTTIME=$(date +%s)
 NOW=$(date +"%Y-%m-%d-%H-%M-%S")
 LOGFILE="app-zip-$NOW.log"
 
+# Install production dependencies if vendor folder is missing.
+if [ ! -d "$DIR/vendor" ]; then
+  composer install --no-dev --no-interaction --no-scripts --no-plugins
+fi
+
+# Build autoloader.
+composer dump-autoload --no-dev --optimize --classmap-authoritative --no-interaction --no-scripts --no-plugins
+
 # Packaged files and directories.
 PATHS=(
-  "app/"
-  "bootstrap/"
-  "config/"
-  "database/"
-  "nginx/"
-  "public/"
-  "resources/"
-  "routes/"
-  "storage/app/public/.gitignore"
-  "storage/framework/cache/data/.gitignore"
-  "storage/framework/sessions/.gitignore"
-  "storage/framework/views/.gitignore"
-  "storage/logs/.gitignore"
-  "artisan"
-  "composer.json"
-  "update.sh"
-  ".env.example"
+    "app/"
+    "bootstrap/"
+    "config/"
+    "database/"
+    "nginx/"
+    "public/"
+    "resources/"
+    "routes/"
+    "storage/app/public/.gitignore"
+    "storage/framework/cache/data/.gitignore"
+    "storage/framework/sessions/.gitignore"
+    "storage/framework/views/.gitignore"
+    "storage/logs/.gitignore"
+    "vendor/autoload.php"
+    "vendor/composer/"
+    "vendor/bin/"
+    "artisan"
+    "composer.json"
+    "update.sh"
+    ".env.example"
 )
 
 # Add Composer production dependencies to the PATHS list.
@@ -88,7 +98,7 @@ done
 composer dump-autoload --no-dev --optimize --classmap-authoritative --no-interaction --no-scripts --no-plugins
 
 # Zip paths and output a log to a file.
-zip -r -D -l -1 -v app.zip ${PATHS[@]} > "$LOGFILE.tmp" 2>&1
+zip -r -D -l -1 -v app.zip "${PATHS[@]}" > "$LOGFILE.tmp" 2>&1
 
 # Add information to the zip log file.
 ENDTIME=$(date +%s)
@@ -96,17 +106,17 @@ RUNTIME=$((ENDTIME - STARTTIME))
 echo "Runtime: $RUNTIME seconds"
 RESULT=$(tail -n 1 "$LOGFILE.tmp")
 
-echo "================================" > "$LOGFILE"
-echo "APPLICATION MANIFEST ===========" >> "$LOGFILE"
-echo "================================" >> "$LOGFILE"
-echo "> Runtime: $RUNTIME seconds" >> "$LOGFILE"
-echo "> Results: $RESULT" >> "$LOGFILE"
-echo "> Excluded dependency files:" >> "$LOGFILE"
+echo "================================"; \
+echo "APPLICATION MANIFEST ==========="; \
+echo "================================"; \
+echo "> Runtime: $RUNTIME seconds"; \
+echo "> Results: $RESULT"; \
+echo "> Excluded dependency files:" > "$LOGFILE"
 for IGNORED_FILE in "${IGNORED_FILES[@]}"; do
   echo "  - $IGNORED_FILE" >> "$LOGFILE"
 done
-echo "================================" >> "$LOGFILE"
-echo "CONTENTS =======================" >> "$LOGFILE"
+echo "================================"; \
+echo "CONTENTS ======================="; \
 echo "================================" >> "$LOGFILE"
 
 # Add the contents of the zip to the log file.
