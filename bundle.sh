@@ -7,6 +7,14 @@ STARTTIME=$(date +%s)
 NOW=$(date +"%Y-%m-%d-%H-%M-%S")
 LOGFILE="app-zip-$NOW.log"
 
+# Build front-end assets.
+if [ ! -d "$DIR/node_modules" ]; then
+  npm install
+fi
+if [ ! -d "$DIR/public/build" ]; then
+  npm run build
+fi
+
 # Install production dependencies if vendor folder is missing.
 if [ ! -d "$DIR/vendor" ]; then
   composer install --no-dev --no-interaction --no-scripts --no-plugins
