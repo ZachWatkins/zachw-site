@@ -19,22 +19,21 @@ jobs:
           php-version: "8.3"
 
       - name: Install PHP dependencies
-        run: |
-          cp .env.example .env
-          composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
-          php artisan key:generate
+        run: composer install --no-interaction --prefer-dist --no-suggest
 
       - name: Install NodeJS dependencies
         run: npm install
 
-      - name: Run tests
-        run: php artisan test
-
       - name: Build assets
         run: npm run build
 
+      - name: Run tests
+        run: php artisan test
+
       - name: Bundle
-        run: chmod +x bundle.sh && ./bundle.sh
+        run: |
+          chmod +x bundle.sh
+          ./bundle.sh
         shell: bash
 
       - name: Upload artifact to server
@@ -44,21 +43,22 @@ jobs:
           echo "${{ secrets.DEPLOYKEY }}" >> key
           mkdir -p $HOME/.ssh
           ssh-keyscan -H ${{ secrets.HOST }} >> $HOME/.ssh/known_hosts
-          scp -i key -o UserKnownHostsFile=$HOME/.ssh/known_hosts app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/app.zip
+          scp -i key -o UserKnownHostsFile=$HOME/.ssh/known_hosts app.zip ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/bitnami/nginx/html/laravel/app.zip
           rm key
         shell: bash
 
-      - name: Unzip artifact and update server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEPLOYKEY }}
-          script: |
-            cd /opt/bitnami/nginx/html
-            unzip -o app.zip
-            rm app.zip
-            ./update.sh
+      - name: Deploy
+        run: |
+          touch key
+          chmod 600 key
+          echo "${{ secrets.DEPLOYKEY }}" >> key
+          mkdir -p $HOME/.ssh
+          ssh-keyscan -H ${{ secrets.HOST }} >> $HOME/.ssh/known_hosts
+          chmod +x deploy.sh
+          ./deploy.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} key
+          ssh -i key ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /opt/bitnami/nginx/html/laravel && ./update.sh"
+          rm key
+        shell: bash
 
       - name: Upload artifact to GitHub
         uses: actions/upload-artifact@v2
