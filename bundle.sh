@@ -112,21 +112,24 @@ RUNTIME=$((ENDTIME - STARTTIME))
 echo "Runtime: $RUNTIME seconds"
 RESULT=$(tail -n 1 "$LOGFILE.tmp")
 
-echo "================================"; \
-echo "APPLICATION MANIFEST ==========="; \
-echo "================================"; \
-echo "> Runtime: $RUNTIME seconds"; \
-echo "> Results: $RESULT"; \
-echo "> Excluded dependency files:" > "$LOGFILE"
-for IGNORED_FILE in "${IGNORED_FILES[@]}"; do
-  echo "  - $IGNORED_FILE" >> "$LOGFILE"
-done
-echo "================================"; \
-echo "CONTENTS ======================="; \
-echo "================================" >> "$LOGFILE"
-
-# Add the contents of the zip to the log file.
-cat "$LOGFILE.tmp" >> "$LOGFILE"
+{
+  echo "================================"
+  echo "APPLICATION MANIFEST ==========="
+  echo "================================"
+  echo "> Runtime: $RUNTIME seconds"
+  echo "> Results: $RESULT"
+  echo "> Excluded dependency files:"
+  for IGNORED_FILE in "${IGNORED_FILES[@]}"; do
+    echo "  - $IGNORED_FILE"
+  done
+  echo "================================"
+  echo "CONTENTS ======================="
+  echo "================================"
+  cat "$LOGFILE.tmp"
+} > "$LOGFILE"
 
 # Add the log file to the zip.
 zip -u -1 app.zip "$LOGFILE" > /dev/null 2>&1
+
+# Remove the temporary log file.
+rm "$LOGFILE.tmp"
