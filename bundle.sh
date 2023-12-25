@@ -104,6 +104,9 @@ for COMPOSER_PATH in $COMPOSER_PATHS; do
 done
 
 # Zip paths and output a log to a file.
+if [ -f app.zip ]; then
+  rm app.zip
+fi
 zip -r -D -l -1 -v app.zip "${PATHS[@]}" > "$LOGFILE.tmp" 2>&1
 
 # Add information to the zip log file.
