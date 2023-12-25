@@ -15,13 +15,14 @@ if [ ! -d "$DIR/public/build" ]; then
   npm run build
 fi
 
-# Install production dependencies if vendor folder is missing.
+# Install production dependencies if vendor folder or autoloader is missing.
 if [ ! -d "$DIR/vendor" ]; then
-  composer install --no-dev --no-interaction --no-scripts --no-plugins
+  echo "Installing production dependencies..."
+  composer install --optimize --classmap-authoritative --no-dev --no-interaction --no-scripts --no-plugins
+elif [ ! -f "$DIR/vendor/autoload.php" ]; then
+  echo "Generating autoload files..."
+  composer dump-autoload --optimize --classmap-authoritative --no-dev --no-interaction --no-scripts --no-plugins
 fi
-
-# Build autoloader.
-composer dump-autoload --no-dev --optimize --classmap-authoritative --no-interaction --no-scripts --no-plugins
 
 # Packaged files and directories.
 PATHS=(
@@ -101,9 +102,6 @@ for COMPOSER_PATH in $COMPOSER_PATHS; do
     PATHS+=("$COMPOSER_PATH$FILE")
   done
 done
-
-# Create the autoload file.
-composer dump-autoload --no-dev --optimize --classmap-authoritative --no-interaction --no-scripts --no-plugins
 
 # Zip paths and output a log to a file.
 zip -r -D -l -1 -v app.zip "${PATHS[@]}" > "$LOGFILE.tmp" 2>&1
