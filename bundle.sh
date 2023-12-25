@@ -72,7 +72,7 @@ IGNORED_PATHS=(
     "vendor/psr/http-message/docs"
 )
 IGNORED_FILES=()
-COMPOSER_PATHS=$(composer show --path --no-dev | awk '{print $2}' | sed "s|$DIR/||" | sed "s|$|/|")
+COMPOSER_PATHS=$(composer show --path --no-dev --no-interaction --no-scripts --no-plugins | awk '{print $2}' | sed "s|$DIR/||" | sed "s|$|/|")
 for COMPOSER_PATH in $COMPOSER_PATHS; do
   FILES=$(ls -A "$COMPOSER_PATH")
   for FILE in $FILES; do
