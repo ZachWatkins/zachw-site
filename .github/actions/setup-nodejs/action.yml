@@ -12,7 +12,7 @@ runs:
               SEGMENT_DOWNLOAD_TIMEOUT_MINS: '1'
           with:
               path: node_modules
-              key: ${{ runner.os }}-node_modules-${{ hashFiles('package*.json') }}-${{ hashFiles('.github/actions/node-npm-setup/action.yml') }}
+              key: ${{ runner.os }}-node_modules-${{ hashFiles('package*.json') }}-${{ hashFiles('.github/actions/setup-nodejs/action.yml') }}
 
         - name: Setup Node.js
           uses: actions/setup-node@v4
