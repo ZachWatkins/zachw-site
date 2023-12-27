@@ -48,5 +48,7 @@ jobs:
               uses: ./.github/actions/setup-php
 
             - name: Test PHP
-              run: composer run test
+              run: |
+                  php artisan key:generate --env=testing
+                  composer run test
               shell: bash
