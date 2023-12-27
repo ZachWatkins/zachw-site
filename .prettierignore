@@ -5,3 +5,4 @@ composer.lock
 LICENSE
 public/build
 README.md
+*.php
