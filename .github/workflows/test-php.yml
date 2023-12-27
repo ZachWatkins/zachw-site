@@ -1,0 +1,54 @@
+name: Test PHP
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - '**/*.php'
+            - 'tests/**/*'
+            - '.env.testing'
+            - 'phpunit.xml'
+            - 'composer.json'
+            - 'composer.lock'
+            - '.github/workflows/test-php.yml'
+            - '.github/actions/setup-php/**/*'
+            - '.github/actions/setup-php'
+    pull_request:
+        branches:
+            - main
+        types:
+            - opened
+            - synchronize
+            - reopened
+        paths:
+            - '**/*.php'
+            - 'tests/**/*'
+            - '.env.testing'
+            - 'phpunit.xml'
+            - 'composer.json'
+            - 'composer.lock'
+            - '.github/workflows/test-php.yml'
+            - '.github/actions/setup-php/**/*'
+            - '.github/actions/setup-php'
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4.1.1
+
+            - name: Setup PHP
+              uses: ./.github/actions/setup-php
+
+            - name: Test PHP
+              run: |
+                  php artisan key:generate --env=testing
+                  composer run test
+              shell: bash

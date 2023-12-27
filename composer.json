@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3"
@@ -20,7 +20,8 @@
         "laravel/tinker": "^2.8",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "^10.1",
+        "pestphp/pest": "^2.28",
+        "pestphp/pest-plugin-laravel": "^2.2",
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
@@ -59,7 +60,11 @@
             "@php artisan route:clear"
         ],
         "lint": "./vendor/bin/pint --test",
-        "format": "./vendor/bin/pint --dirty"
+        "format": "./vendor/bin/pint --dirty",
+        "test": [
+            "@php artisan config:clear",
+            "@php artisan test"
+        ]
     },
     "extra": {
         "laravel": {
@@ -67,7 +72,7 @@
         }
     },
     "config": {
-        "optimize-autoloader": true,
+        "optimize-autoloader": false,
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
