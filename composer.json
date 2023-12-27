@@ -57,7 +57,9 @@
             "@php artisan clear-compiled",
             "@php artisan view:clear",
             "@php artisan route:clear"
-        ]
+        ],
+        "lint": "./vendor/bin/pint --test",
+        "format": "./vendor/bin/pint --dirty"
     },
     "extra": {
         "laravel": {
