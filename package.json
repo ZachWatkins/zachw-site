@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "lint": "prettier --check .",
+        "format": "prettier --write ."
     },
     "devDependencies": {
         "axios": "^1.6.1",
