@@ -1,0 +1,48 @@
+name: Pull Request Opened
+
+on:
+  release:
+    types: [released]
+
+concurrency:
+  group: "release"
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+
+      - name: Bundle
+        run: |
+          chmod +x bundle.sh
+          ./bundle.sh
+        shell: bash
+
+      - name: Deploy
+        run: |
+          touch key
+          chmod 600 key
+          echo "${{ secrets.DEPLOYKEY }}" >> key
+          mkdir -p $HOME/.ssh
+          ssh-keyscan -H ${{ secrets.HOST }} >> $HOME/.ssh/known_hosts
+          chmod +x deploy.sh
+          ./deploy.sh ${{ secrets.USERNAME }} ${{ secrets.HOST }} key
+          ssh -i key ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /opt/bitnami/nginx/html/laravel && ./update.sh"
+          rm key
+        shell: bash
+
+      - name: Upload artifact to GitHub
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: build
+          path: app.zip
