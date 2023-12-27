@@ -1,35 +1,35 @@
 name: Lint Code
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4.1.1
 
-      - name: Setup PHP
-        uses: ./.github/actions/setup-php
+            - name: Setup PHP
+              uses: ./.github/actions/setup-php
 
-      - name: Setup NodeJS
-        uses: ./.github/actions/setup-nodejs
+            - name: Setup NodeJS
+              uses: ./.github/actions/setup-nodejs
 
-      - name: Lint PHP
-        run: composer run lint
-        shell: bash
+            - name: Lint PHP
+              run: composer run lint
+              shell: bash
 
-      - name: Lint JS
-        run: npm run lint
-        shell: bash
+            - name: Lint JS
+              run: npm run lint
+              shell: bash
