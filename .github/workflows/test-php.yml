@@ -4,6 +4,16 @@ on:
     push:
         branches:
             - main
+        paths:
+            - '**/*.php'
+            - 'tests/**/*'
+            - '.env.testing'
+            - 'phpunit.xml'
+            - 'composer.json'
+            - 'composer.lock'
+            - '.github/workflows/test-php.yml'
+            - '.github/actions/setup-php/**/*'
+            - '.github/actions/setup-php'
     pull_request:
         branches:
             - main
@@ -11,6 +21,16 @@ on:
             - opened
             - synchronize
             - reopened
+        paths:
+            - '**/*.php'
+            - 'tests/**/*'
+            - '.env.testing'
+            - 'phpunit.xml'
+            - 'composer.json'
+            - 'composer.lock'
+            - '.github/workflows/test-php.yml'
+            - '.github/actions/setup-php/**/*'
+            - '.github/actions/setup-php'
     workflow_dispatch:
 
 concurrency:
