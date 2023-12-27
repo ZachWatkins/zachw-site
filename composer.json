@@ -60,7 +60,11 @@
             "@php artisan route:clear"
         ],
         "lint": "./vendor/bin/pint --test",
-        "format": "./vendor/bin/pint --dirty"
+        "format": "./vendor/bin/pint --dirty",
+        "test": [
+            "@php artisan config:clear",
+            "@php artisan test"
+        ]
     },
     "extra": {
         "laravel": {
