@@ -2,8 +2,7 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": "18.17.1",
-        "npm": "10.2.5"
+        "node": "18.17.1"
     },
     "scripts": {
         "dev": "vite",
