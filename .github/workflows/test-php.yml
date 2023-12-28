@@ -52,8 +52,6 @@ jobs:
 
             - name: Test PHP
               run: |
-                  php artisan key:generate --env=testing
-                  touch database/database.sqlite
                   npm run build
                   composer run test
               shell: bash
