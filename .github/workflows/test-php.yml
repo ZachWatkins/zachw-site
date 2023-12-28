@@ -45,7 +45,7 @@ jobs:
               uses: actions/checkout@v4.1.1
 
             - name: Setup NodeJS
-              uses: ./github/actions/setup-nodejs
+              uses: ./.github/actions/setup-nodejs
 
             - name: Setup PHP
               uses: ./.github/actions/setup-php
