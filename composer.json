@@ -62,9 +62,6 @@
         "lint": "./vendor/bin/pint --test",
         "format": "./vendor/bin/pint --dirty",
         "test": [
-            "@php artisan key:generate --env=testing",
-            "@php artisan config:clear",
-            "echo '' > database/database-testing.sqlite",
             "@php artisan test --parallel --recreate-databases --stop-on-failure --env=testing"
         ]
     },
