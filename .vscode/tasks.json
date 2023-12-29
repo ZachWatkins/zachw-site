@@ -20,7 +20,7 @@
             "label": "Serve Vite",
             "type": "npm",
             "script": "serve",
-            "problemMatcher": "$tsc"
+            "problemMatcher": "$vite"
         }
     ]
 }
