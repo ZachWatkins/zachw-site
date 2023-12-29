@@ -5,6 +5,7 @@
         "node": "18.17.1"
     },
     "scripts": {
+        "serve": "vite",
         "prepare": "husky install",
         "dev": "vite",
         "build": "vite build",
