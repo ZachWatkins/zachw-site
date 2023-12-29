@@ -1,5 +1,12 @@
 name: Dependabot auto-merge
-on: pull_request
+on:
+    pull_request:
+        branches:
+            - main
+        paths:
+            - 'package-lock.json'
+            - 'composer.lock'
+            - '.github/workflows/dependabot.yml'
 
 permissions:
     contents: write

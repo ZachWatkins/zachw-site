@@ -1,13 +1,16 @@
-name: Lint Code
+name: Lint PHP Code
 
 on:
-    push:
-        branches:
-            - main
     pull_request:
         branches:
             - main
-    workflow_dispatch:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        paths:
+            - '*.php'
+            - '.github/workflows/lint-php.yml'
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,11 +26,5 @@ jobs:
             - name: Setup PHP
               uses: ./.github/actions/setup-php
 
-            - name: Setup NodeJS
-              uses: ./.github/actions/setup-nodejs
-
             - name: Lint PHP
-              run: composer run lint
-
-            - name: Lint JS
-              run: npm run lint
+              run: ./vendor/bin/pint --test
