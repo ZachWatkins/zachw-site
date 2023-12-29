@@ -1,0 +1,20 @@
+#!/bin/bash
+# If the NVM command is found, use it to install the version of Node for this project.
+if [ -x "$(command -v nvm)" ]; then
+    NVM_VERSION=$(cat .nvmrc)
+    nvm install "$NVM_VERSION"
+    nvm use "$NVM_VERSION"
+fi
+
+cp .env.local .env
+touch database/database.sqlite
+
+npm install
+npm run build
+composer install
+
+php artisan key:generate
+php artisan serve
+php artisan migrate:fresh --seed
+
+npm run serve
