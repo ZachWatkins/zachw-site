@@ -11,29 +11,22 @@
                 "label": "Serve Application",
                 "type": "shell",
                 "dependsOn": ["Serve Laravel", "Serve Vite"],
-                "dependsOrder": "sequence"
+                "dependsOrder": "parallel"
             },
             {
                 "label": "Serve Laravel",
                 "type": "shell",
-                "command": "php artisan serve",
-                "presentation": {
-                    "reveal": "always",
-                    "focus": true,
-                    "panel": "dedicated",
-                    "showReuseMessage": false
+                "command": "php",
+                "args": ["artisan", "serve"],
+                "windows": {
+                    "command": "wsl",
+                    "args": ["-e", "php", "artisan", "serve"]
                 }
             },
             {
                 "label": "Serve Vite",
-                "type": "shell",
-                "command": "npm run serve",
-                "presentation": {
-                    "reveal": "always",
-                    "focus": true,
-                    "panel": "dedicated",
-                    "showReuseMessage": false
-                }
+                "type": "npm",
+                "script": "serve"
             }
         ]
     },
