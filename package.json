@@ -27,12 +27,10 @@
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,html,json,yml,css}": [
-            "prettier --write",
-            "git add"
+            "prettier --write"
         ],
         "*.php": [
-            "composer run format",
-            "git add"
+            "composer run format"
         ]
     },
     "prettier": {
