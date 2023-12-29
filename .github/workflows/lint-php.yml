@@ -1,12 +1,6 @@
 name: Lint PHP Code
 
 on:
-    push:
-        branches:
-            - main
-        paths:
-            - '*.php'
-            - '.github/workflows/lint-php.yml'
     pull_request:
         branches:
             - main
