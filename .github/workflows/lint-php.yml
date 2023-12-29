@@ -1,0 +1,36 @@
+name: Lint PHP Code
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - '*.php'
+            - '.github/workflows/lint-php.yml'
+    pull_request:
+        branches:
+            - main
+        types:
+            - opened
+            - synchronize
+            - reopened
+        paths:
+            - '*.php'
+            - '.github/workflows/lint-php.yml'
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: ./.github/actions/setup-php
+
+            - name: Lint PHP
+              run: composer run lint
