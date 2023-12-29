@@ -18,7 +18,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4.1.1
+              uses: actions/checkout@v4
 
             - name: Setup PHP
               uses: ./.github/actions/setup-php
@@ -28,8 +28,6 @@ jobs:
 
             - name: Lint PHP
               run: composer run lint
-              shell: bash
 
             - name: Lint JS
               run: npm run lint
-              shell: bash

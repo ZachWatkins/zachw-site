@@ -42,7 +42,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4.1.1
+              uses: actions/checkout@v4
 
             - name: Setup NodeJS
               uses: ./.github/actions/setup-nodejs
@@ -54,4 +54,3 @@ jobs:
               run: |
                   npm run build
                   composer run test
-              shell: bash
