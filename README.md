@@ -1,66 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ZachW.site
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+```bash
+$ sail artisan inspire
 
-## About Laravel
+“ It is not the man who has too little, but the man who craves more, that is poor. ”
+— Seneca
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+This application is a starting point for building an authenticated API with the [Laravel](https://laravel.com/) PHP framework.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Local System Requirements](#system-requirements)
+- [Installation](#installation)
+- [Features](#features)
+- [Routes](#routes)
+- [Development](#development)
 
-## Learning Laravel
+## Local System Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. PHP and Composer: `$ bin/install-php`
+   - [PHP](https://www.php.net/downloads.php)  
+   - [Composer](https://getcomposer.org/download/)  
+3. (Windows) Windows Subsystem for Linux and Ubuntu: `$ bin/install-wsl`
+   - [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)  
+   - [Ubuntu](https://www.microsoft.com/en-us/p/ubuntu/9nblggh4msv6?activetab=pivot:overviewtab)  
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone the repository: `$ git clone https://github.com/zachwatkins/laravel-template`
+2. Open the project directory: `$ cd laravel-template`
+3. Run the repository initialization script: `$ bin/once`
 
-## Laravel Sponsors
+## Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Laravel first-party packages and features:
 
-### Premium Partners
+1. __Breeze (Laravel Package)__ for user registration, login, authentication, and profile management. Also includes PHPUnit tests for authentication features.
+2. __Sanctum (Laravel Package)__ for API authentication and token management.
+3. __Sail (Laravel Package)__ for local development.
+4. __Queues__ for performing tasks asynchronously.
+5. __Migrations__ for database schema management.
+6. __Tests__ for peace of mind.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+My own features:
 
-## Contributing
+1. __User Storage Scope__ shows how to store each user's files in their own folder.
+2. __Generic Model Class__ demonstrates how Laravel registers, creates, and retrieves database table records.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Routes
 
-## Code of Conduct
+- [Public Web Routes](#public-web-routes)
+- [Guest Web Routes](#guest-web-routes)
+- [Authenticated Web Routes](#authenticated-web-routes)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Public Web Routes
 
-## Security Vulnerabilities
+| Verb | URI | Action | Route Name
+| GET  | `/` | view   | welcome
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Guest Web Routes
 
-## License
+| Verb      | URI                | Action  | Route Name
+| GET       | `/register`        | create  | register
+| POST      | `/register`        | store   | -
+| GET       | `/login`           | create  | login
+| POST      | `/login`           | store   | -
+| GET       | `/forgot-password` | create  | password.request
+| POST      | `/forgot-password` | store   | password.email
+| GET       | `/reset-password`  | create  | password.reset
+| POST      | `/reset-password`  | store   | password.update
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Authenticated Web Routes
+
+| Verb      | URI                          | Action  | Route Name
+| GET       | `/verify-email`              | create  | verification.notice
+| GET       | `/verify-email/{id}/{hash}`  | create  | verification.verify
+| POST      | `/verify-email/{id}/{hash}`  | store   | -
+| POST      | `/verify-email-notification` | store   | verification.send
+| GET       | `/confirm-password`          | create  | password.confirm
+| POST      | `/confirm-password`          | store   | -
+| PUT       | `/password`                  | update  | password.update
+| POST      | `/logout`                    | destroy | logout
+| GET       | `/dashboard/`                | view    | dashboard
+| GET       | `/profile`                   | view    | profile.edit
+| PATCH     | `/profile`                   | update  | profile.update
+| DELETE    | `/profile`                   | destroy | profile.destroy
+
+### Authenticated API Routes
+
+| Verb      | URI                 | Action  | Route Name
+| GET       | `/api/user`         | closure | -
+| GET       | `/models`           | index   | photos.index
+| GET       | `/models/create`    | create  | photos.create
+| POST      | `/models`           | store   | photos.store
+| GET       | `/models/{id}`      | show    | photos.show
+| GET       | `/models/{id}/edit` | edit    | photos.edit
+| PUT/PATCH | `/models/{id}`      | update  | photos.update
+| DELETE    | `/models/{id}`      | destroy | photos.destroy
+
+## Development
+
+
+### Laravel Sail
+
+This application uses [Laravel Sail](https://laravel.com/docs/8.x/sail) for local development. Laravel Sail is a Docker-based development environment for Laravel. It provides a minimal Linux environment with all of the services and features you need to develop a Laravel application.
+
+If you are using Windows and want to run the application locally, you will need to install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+### URLs
+
+`http://localhost:80` (Web)
+`http://localhost:8025` (Mailpit)
+
+## Documentation
+
+(Laravel Documentation)[./docs/laravel/]

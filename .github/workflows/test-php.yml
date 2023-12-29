@@ -44,11 +44,14 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4.1.1
 
+            - name: Setup NodeJS
+              uses: ./.github/actions/setup-nodejs
+
             - name: Setup PHP
               uses: ./.github/actions/setup-php
 
             - name: Test PHP
               run: |
-                  php artisan key:generate --env=testing
+                  npm run build
                   composer run test
               shell: bash

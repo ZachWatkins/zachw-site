@@ -21,3 +21,4 @@ yarn-error.log
 *.pem
 *.tmp
 *.log
+.env.testing
