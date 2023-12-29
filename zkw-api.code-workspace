@@ -9,7 +9,6 @@
         "tasks": [
             {
                 "label": "Serve Application",
-                "type": "shell",
                 "dependsOn": ["Serve Laravel", "Serve Vite"],
                 "dependsOrder": "parallel"
             },
@@ -26,7 +25,8 @@
             {
                 "label": "Serve Vite",
                 "type": "npm",
-                "script": "serve"
+                "script": "serve",
+                "problemMatcher": "$vite"
             }
         ]
     },
