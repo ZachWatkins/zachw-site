@@ -6,7 +6,36 @@
     ],
     "tasks": {
         "version": "2.0.0",
-        "tasks": []
+        "tasks": [
+            {
+                "label": "Serve Application",
+                "type": "shell",
+                "dependsOn": ["Serve Laravel", "Serve Vite"],
+                "dependsOrder": "sequence"
+            },
+            {
+                "label": "Serve Laravel",
+                "type": "shell",
+                "command": "php artisan serve",
+                "presentation": {
+                    "reveal": "always",
+                    "focus": true,
+                    "panel": "dedicated",
+                    "showReuseMessage": false
+                }
+            },
+            {
+                "label": "Serve Vite",
+                "type": "shell",
+                "command": "npm run serve",
+                "presentation": {
+                    "reveal": "always",
+                    "focus": true,
+                    "panel": "dedicated",
+                    "showReuseMessage": false
+                }
+            }
+        ]
     },
     "settings": {},
     "extensions": {
