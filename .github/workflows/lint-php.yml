@@ -33,4 +33,4 @@ jobs:
               uses: ./.github/actions/setup-php
 
             - name: Lint PHP
-              run: composer run lint
+              run: ./vendor/bin/pint --test
