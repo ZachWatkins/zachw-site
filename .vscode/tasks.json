@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Serve Application",
+            "dependsOn": ["Serve Laravel", "Serve Vite"],
+            "dependsOrder": "parallel"
+        },
+        {
+            "label": "Serve Laravel",
+            "type": "shell",
+            "command": "php",
+            "args": ["artisan", "serve"],
+            "windows": {
+                "command": "wsl",
+                "args": ["-e", "php", "artisan", "serve"]
+            }
+        },
+        {
+            "label": "Serve Vite",
+            "type": "npm",
+            "script": "serve",
+            "problemMatcher": "$vite"
+        }
+    ]
+}

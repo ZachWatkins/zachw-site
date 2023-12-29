@@ -1,7 +1,7 @@
 # ZachW.site
 
 ```bash
-$ sail artisan inspire
+$ php artisan inspire
 
 “ It is not the man who has too little, but the man who craves more, that is poor. ”
 — Seneca
@@ -38,7 +38,6 @@ Laravel first-party packages and features:
 
 1. __Breeze (Laravel Package)__ for user registration, login, authentication, and profile management. Also includes PHPUnit tests for authentication features.
 2. __Sanctum (Laravel Package)__ for API authentication and token management.
-3. __Sail (Laravel Package)__ for local development.
 4. __Queues__ for performing tasks asynchronously.
 5. __Migrations__ for database schema management.
 6. __Tests__ for peace of mind.
@@ -101,10 +100,17 @@ My own features:
 
 ## Development
 
+To start the application, you will need two terminal windows open. In the first window, run the following command:
 
-### Laravel Sail
+```bash
+php artisan serve
+```
 
-This application uses [Laravel Sail](https://laravel.com/docs/8.x/sail) for local development. Laravel Sail is a Docker-based development environment for Laravel. It provides a minimal Linux environment with all of the services and features you need to develop a Laravel application.
+In the second window, run the following command:
+
+```bash
+npm run serve
+```
 
 If you are using Windows and want to run the application locally, you will need to install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
