@@ -1,15 +1,16 @@
 name: Prerelease
 
 on:
-    release:
-        types: [prereleased]
+    push:
+        branches:
+            - main
 
 concurrency:
     group: 'prerelease'
     cancel-in-progress: true
 
 jobs:
-    release:
+    audit:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -19,13 +20,49 @@ jobs:
               uses: ./.github/actions/setup-nodejs
 
             - name: Check NPM Dependencies
-              run: npm audit
+              run: npm audit > error-npm.txt
 
             - name: Setup PHP
               uses: ./.github/actions/setup-php
 
             - name: Check PHP Dependencies
-              run: composer audit
+              run: composer audit > error-composer.txt
+
+            - name: Create PR
+              if: failure()
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const errorMessageNPM = fs.existsSync('error-npm.txt') ? fs.readFileSync('error-npm.txt', 'utf8') : '';
+                      const errorMessageComposer = fs.existsSync('error-composer.txt') ? fs.readFileSync('error-composer.txt', 'utf8') : '';
+                      const errorMessage = [errorMessageNPM, errorMessageComposer].filter(Boolean).join('\n');
+                      const github = require('@actions/github');
+                      const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+                      await octokit.rest.pulls.create({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          title: 'Fix failed dependency audit',
+                          head: 'fix-dependency-audit', // replace with your branch name
+                          base: 'main', // replace with your base branch name
+                          body: `This PR is opened automatically because the dependency audit check failed. Error message:\n\n ${errorMessage}`
+                      });
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: ./.github/actions/setup-nodejs
+
+            - name: Setup PHP
+              uses: ./.github/actions/setup-php
+
+            - name: Build
+              run: npm run build
 
             - name: Bundle
               run: |
