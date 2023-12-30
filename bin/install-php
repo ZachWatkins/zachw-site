@@ -1,0 +1,26 @@
+#!/bin/bash
+# https://packages.sury.org/php/README.txt
+# Install PHP and necessary extensions for calling Sail from the command line.
+if [ "$(whoami)" != "root" ]; then
+    SUDO=sudo
+fi
+
+${SUDO} apt-get update
+${SUDO} apt-get -y install lsb-release ca-certificates curl
+${SUDO} curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+${SUDO} sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+${SUDO} apt-get update
+${SUDO} apt install php8.2 -y
+# Install required PHP extensions for Laravel 10.
+${SUDO} apt install php8.2-ctype
+${SUDO} apt install php8.2-curl
+${SUDO} apt install php8.2-dom
+${SUDO} apt install php8.2-fileinfo
+${SUDO} apt install php8.2-mbstring
+${SUDO} apt install php8.2-pdo
+${SUDO} apt install php8.2-tokenizer
+${SUDO} apt install php8.2-xml
+${SUDO} apt install php8.2-zip
+${SUDO} apt install php8.2-sqlite3
+${SUDO} apt install php8.2-mysql
+${SUDO} apt install composer

@@ -1,14 +1,32 @@
 # ZachW.site
 
-```bash
-$ php artisan inspire
+![GitHub Package.json Version](https://img.shields.io/github/package-json/v/zachwatkins/zachw-site)
+![Code Size](https://img.shields.io/github/languages/code-size/zachwatkins/zachw-site)
+![License](https://img.shields.io/github/license/zachwatkins/zachw-site)
+![Open Issues](https://img.shields.io/github/issues-raw/zachwatkins/zachw-site)
 
-“ It is not the man who has too little, but the man who craves more, that is poor. ”
-— Seneca
+> IMPORTANT: This is work in progress! The project is subject to significant change until its 1.0.0 release.
 
-```
+## Status
 
-This application is a starting point for building an authenticated API with the [Laravel](https://laravel.com/) PHP framework.
+![Laravel Pint](https://img.shields.io/github/actions/workflow/status/zachwatkins/zachw-site/lint-php.yml?label=Laravel%20Pint)
+![Prettier](https://img.shields.io/github/actions/workflow/status/zachwatkins/zachw-site/lint-prettier.yml?label=Prettier)
+![Pest Tests](https://img.shields.io/github/actions/workflow/status/zachwatkins/zachw-site/test-php.yml?label=Pest%20Tests)
+![Release](https://img.shields.io/github/actions/workflow/status/zachwatkins/zachw-site/prerelease.yml?label=Release)
+![Deployment](https://img.shields.io/github/actions/workflow/status/zachwatkins/zachw-site/release.yml?label=Deployment)
+
+## Progress
+
+![Closed Issues](https://img.shields.io/github/issues-closed/zachwatkins/zachw-site)
+![Closed Pull Requests](https://img.shields.io/github/issues-pr-closed/zachwatkins/zachw-site)
+
+## Issues
+
+![Open Issues](https://img.shields.io/github/issues-raw/zachwatkins/zachw-site)
+![Open Bug Issues](https://img.shields.io/github/issues/zachwatkins/zachw-site/bug)
+![Open Feature Issues](https://img.shields.io/github/issues/zachwatkins/zachw-site/feature)
+![Open Pull Requests](https://img.shields.io/github/issues-pr-raw/zachwatkins/zachw-site)
+![Last Commit](https://img.shields.io/github/last-commit/zachwatkins/zachw-site)
 
 - [Local System Requirements](#system-requirements)
 - [Installation](#installation)
@@ -18,7 +36,9 @@ This application is a starting point for building an authenticated API with the 
 
 ## Local System Requirements
 
-1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
+1. Node.js and NPM.
+   - [Node.js](https://nodejs.org/en/download/)  
+   - [NPM](https://www.npmjs.com/get-npm)
 2. PHP and Composer: `$ bin/install-php`
    - [PHP](https://www.php.net/downloads.php)  
    - [Composer](https://getcomposer.org/download/)  
@@ -28,8 +48,8 @@ This application is a starting point for building an authenticated API with the 
 
 ## Installation
 
-1. Clone the repository: `$ git clone https://github.com/zachwatkins/laravel-template`
-2. Open the project directory: `$ cd laravel-template`
+1. Clone the repository: `$ git clone https://github.com/zachwatkins/zachw-site`
+2. Open the project directory: `$ cd zachw-site`
 3. Run the repository initialization script: `$ bin/once`
 
 ## Features
@@ -125,4 +145,4 @@ If you are using Windows and want to run the application locally, you will need 
 
 ## Documentation
 
-(Laravel Documentation)[./docs/laravel/]
+(Laravel Documentation)[./docs/laravel.md]
